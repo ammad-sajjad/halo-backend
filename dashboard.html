@@ -12,57 +12,85 @@
   th,td{padding:8px 10px;border:1px solid #21262d;text-align:left}
   th{background:#161b22;color:#8b949e;font-weight:600}
   tr:hover{background:#161b22}
-  form{background:#161b22;padding:20px;border-radius:8px;border:1px solid #21262d}
-  input,button{padding:8px 12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#e6edf3;font-size:14px}
-  input{width:320px}
-  input:focus{border-color:#58a6ff;outline:none}
+  form,.section{background:#161b22;padding:20px;border-radius:8px;border:1px solid #21262d;margin-bottom:16px}
+  input,button,textarea{padding:8px 12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#e6edf3;font-size:14px}
+  input{width:100%}
+  textarea{width:100%;height:60px;resize:vertical;font-family:monospace;font-size:12px}
+  input:focus,textarea:focus{border-color:#58a6ff;outline:none}
   button{cursor:pointer;font-weight:600}
-  .btn-p{background:#238636;border-color:#238636;color:#fff}
+  .btn-p{background:#238636;border-color:#238636;color:#fff;padding:10px 24px;font-size:15px}
   .btn-p:hover{background:#2ea043}
+  .btn-s{background:#21262d;font-size:12px;padding:6px 12px}
+  .btn-s:hover{background:#30363d}
   .btn-c{background:#21262d;font-size:12px;padding:4px 10px}
   .btn-c:hover{background:#30363d}
   .btn-d{background:#da3633;border-color:#da3633;color:#fff;font-size:11px;padding:3px 8px}
   .btn-d:hover{background:#f85149}
-  label{display:inline-block;width:130px;font-size:14px;color:#8b949e}
-  .row{margin:8px 0;display:flex;align-items:center}
-  #linkBox{margin-top:16px;padding:16px;background:#0d1117;border:2px solid #238636;border-radius:8px;display:none}
+  label{display:block;font-size:13px;color:#8b949e;margin-bottom:4px;margin-top:12px}
+  label:first-child{margin-top:0}
+  #linkBox{margin-top:16px;padding:20px;background:#0d1117;border:2px solid #238636;border-radius:8px;display:none}
   #linkBox.show{display:block}
-  .link-url{font-size:18px;word-break:break-all;color:#58a6ff;font-weight:700;margin:8px 0;padding:10px;background:#161b22;border-radius:6px;user-select:all}
-  .link-lbl{font-size:12px;color:#8b949e;margin-bottom:4px}
+  .link-url{font-size:18px;word-break:break-all;color:#58a6ff;font-weight:700;margin:10px 0;padding:12px;background:#161b22;border-radius:6px;user-select:all}
+  .link-lbl{font-size:12px;color:#8b949e}
   .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
   .b-ok{background:#238636;color:#fff}
   .b-wait{background:#9e6a03;color:#fff}
-  .steps{color:#8b949e;font-size:13px;margin-top:12px;line-height:1.8}
-  .steps b{color:#e6edf3}
+  .auto-tag{display:inline-block;background:#238636;color:#fff;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .note{font-size:12px;color:#8b949e;margin-top:4px}
+  hr{border:none;border-top:1px solid #21262d;margin:16px 0}
 </style>
 </head><body>
 
 <h1>Halo Backend</h1>
-<p class="sub">Fill in session data, get a link, send it to the client.</p>
+<p class="sub">Create a verification link for your client in seconds.</p>
 
 <h3>1. Create Transaction</h3>
 <form id="f">
-  <div class="row"><label>proxy_host *</label><input name="proxy_host" required placeholder="IP address from session"></div>
-  <div class="row"><label>user_agent *</label><input name="user_agent" required placeholder="Browser User-Agent string"></div>
-  <div class="row"><label>code</label><input name="code" placeholder="Session code"></div>
-  <div class="row"><label>samosa (api key)</label><input name="samosa" placeholder="API key if needed"></div>
-  <div class="row"><label>transaction_id</label><input name="transaction_id" placeholder="auto-generated if empty"></div>
-  <div class="row"><label>user_id</label><input name="user_id" placeholder="auto-generated if empty"></div>
-  <div style="margin-top:14px"><button type="submit" class="btn-p">Create &amp; Get Link</button></div>
+  <div class="section">
+    <label>Paste appointment website URL (optional — extracts parameters automatically)</label>
+    <textarea id="urlInput" placeholder="Paste the URL from the appointment website address bar here..."></textarea>
+    <button type="button" class="btn-s" onclick="parseUrl()" style="margin-top:8px">Extract from URL</button>
+  </div>
+
+  <label>proxy_host (IP) <span class="auto-tag" id="ipTag" style="display:none">auto-detected</span></label>
+  <input name="proxy_host" id="proxyHost" required placeholder="Loading your IP...">
+  <div class="note">The IP address of the person who booked the appointment</div>
+
+  <label>user_agent <span class="auto-tag" id="uaTag" style="display:none">auto-detected</span></label>
+  <input name="user_agent" id="userAgent" required placeholder="Loading...">
+  <div class="note">Use the same browser you used on the appointment website</div>
+
+  <div class="grid">
+    <div>
+      <label>code</label>
+      <input name="code" id="codeInput" placeholder="Session code">
+    </div>
+    <div>
+      <label>samosa (api key)</label>
+      <input name="samosa" id="samosaInput" placeholder="API key">
+    </div>
+  </div>
+  <div class="grid">
+    <div>
+      <label>transaction_id</label>
+      <input name="transaction_id" id="txnInput" placeholder="auto-generated if empty">
+    </div>
+    <div>
+      <label>user_id</label>
+      <input name="user_id" id="uidInput" placeholder="auto-generated if empty">
+    </div>
+  </div>
+
+  <div style="margin-top:20px"><button type="submit" class="btn-p">Create &amp; Get Link</button></div>
 </form>
 
 <div id="linkBox">
   <h3 style="margin-top:0;color:#58a6ff">2. Send this link to the client</h3>
-  <div class="link-lbl">Deep link (client taps this on their phone to open app):</div>
+  <div class="link-lbl">Client taps this link on their phone (works in WhatsApp, Telegram, etc.):</div>
   <div class="link-url" id="deepLink"></div>
-  <button class="btn-c" id="copyBtn">Copy Link</button>
-  <div class="steps">
-    <b>How it works:</b><br>
-    1. Client installs the APK (one time only)<br>
-    2. Client taps this link on their phone<br>
-    3. App opens automatically, runs liveness verification<br>
-    4. Result (liveness_id) appears in the table below
-  </div>
+  <button class="btn-s" id="copyBtn">Copy Link</button>
+  <p class="note">Client needs the app installed. First time they may need to choose "Open with Holic Selfie".</p>
 </div>
 
 <h3>3. Transactions</h3>
@@ -75,6 +103,54 @@ function esc(s) {
   return d.innerHTML;
 }
 
+// Auto-detect user agent from this browser
+document.getElementById("userAgent").value = navigator.userAgent;
+document.getElementById("uaTag").style.display = "inline-block";
+
+// Auto-detect IP
+fetch("/api/v1/myip")
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.ip) {
+      document.getElementById("proxyHost").value = data.ip;
+      document.getElementById("ipTag").style.display = "inline-block";
+    }
+  })
+  .catch(function() {
+    document.getElementById("proxyHost").placeholder = "Enter IP address";
+  });
+
+// Parse URL from appointment website
+function parseUrl() {
+  var raw = document.getElementById("urlInput").value.trim();
+  if (!raw) return;
+  try {
+    var url = new URL(raw);
+    var params = url.searchParams;
+    // Try common parameter names
+    var codeNames = ["code", "c", "verificationCode", "vc"];
+    var txnNames = ["transaction_id", "transactionId", "tid", "txn", "t"];
+    var uidNames = ["user_id", "userId", "uid", "u"];
+    var keyNames = ["samosa", "api_key", "apiKey", "key", "k", "token"];
+
+    codeNames.forEach(function(n) { if (params.get(n)) document.getElementById("codeInput").value = params.get(n); });
+    txnNames.forEach(function(n) { if (params.get(n)) document.getElementById("txnInput").value = params.get(n); });
+    uidNames.forEach(function(n) { if (params.get(n)) document.getElementById("uidInput").value = params.get(n); });
+    keyNames.forEach(function(n) { if (params.get(n)) document.getElementById("samosaInput").value = params.get(n); });
+
+    // Also try path segments like /transaction/ABC123/user/XYZ
+    var parts = url.pathname.split("/").filter(Boolean);
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i] === "transaction" && parts[i+1]) document.getElementById("txnInput").value = parts[i+1];
+      if (parts[i] === "user" && parts[i+1]) document.getElementById("uidInput").value = parts[i+1];
+    }
+
+    alert("Extracted what I could from the URL. Check the fields below.");
+  } catch(e) {
+    alert("Could not parse URL. Fill in the fields manually.");
+  }
+}
+
 function load() {
   fetch("/api/v1/transactions")
     .then(function(r) { return r.json(); })
@@ -83,19 +159,18 @@ function load() {
         document.getElementById("tbl").innerHTML = '<p style="color:#8b949e">No transactions yet.</p>';
         return;
       }
-      var h = '<table><tr><th>q</th><th>code</th><th>proxy</th><th>user_agent</th><th>liveness_id</th><th>status</th><th>link</th><th></th></tr>';
+      var h = '<table><tr><th>q</th><th>code</th><th>proxy</th><th>liveness_id</th><th>status</th><th>link</th><th></th></tr>';
       rows.forEach(function(r) {
         var lid = r.liveness_id;
-        var badge = lid ? '<span class="badge b-ok">Done</span>' : '<span class="badge b-wait">Waiting</span>';
+        var badge = lid ? '<span class="badge b-ok">Verified</span>' : '<span class="badge b-wait">Waiting</span>';
         var link = window.location.origin + "/go/" + encodeURIComponent(r.q);
         h += "<tr>"
           + "<td>" + esc(r.q) + "</td>"
           + "<td>" + esc(r.code) + "</td>"
           + "<td>" + esc(r.proxy_host) + "</td>"
-          + '<td title="' + esc(r.user_agent) + '">' + esc((r.user_agent || "").slice(0, 35)) + "</td>"
           + "<td>" + (lid ? esc(lid) : "-") + "</td>"
           + "<td>" + badge + "</td>"
-          + '<td><button class="btn-c" data-link="' + esc(link) + '">Copy</button></td>'
+          + '<td><button class="btn-c" data-link="' + esc(link) + '">Copy Link</button></td>'
           + '<td><button class="btn-d" data-del="' + esc(r.q) + '">X</button></td>'
           + "</tr>";
       });
@@ -109,7 +184,7 @@ document.getElementById("tbl").addEventListener("click", function(e) {
   if (btn.dataset.link) {
     navigator.clipboard.writeText(btn.dataset.link);
     btn.textContent = "Copied!";
-    setTimeout(function() { btn.textContent = "Copy"; }, 1500);
+    setTimeout(function() { btn.textContent = "Copy Link"; }, 1500);
   }
   if (btn.dataset.del) {
     if (!confirm("Delete " + btn.dataset.del + "?")) return;
@@ -142,7 +217,6 @@ document.getElementById("f").addEventListener("submit", function(e) {
       var link = window.location.origin + "/go/" + encodeURIComponent(data.q);
       document.getElementById("deepLink").textContent = link;
       document.getElementById("linkBox").classList.add("show");
-      e.target.reset();
       load();
     });
 });

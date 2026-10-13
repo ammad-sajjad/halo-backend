@@ -101,6 +101,13 @@ app.get("/api/v1/transactions", function(req, res) {
   res.json(listStmt.all());
 });
 
+// Returns the caller's public IP (for auto-detecting operator's IP)
+app.get("/api/v1/myip", function(req, res) {
+  var ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "";
+  if (ip.includes(",")) ip = ip.split(",")[0].trim();
+  res.json({ ip: ip });
+});
+
 // Android App Links verification
 app.get("/.well-known/assetlinks.json", function(req, res) {
   res.json([{
