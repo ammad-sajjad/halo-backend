@@ -87,7 +87,7 @@ function load() {
       rows.forEach(function(r) {
         var lid = r.liveness_id;
         var badge = lid ? '<span class="badge b-ok">Done</span>' : '<span class="badge b-wait">Waiting</span>';
-        var link = "holicselfie://?gourmet=" + encodeURIComponent(r.q);
+        var link = window.location.origin + "/go/" + encodeURIComponent(r.q);
         h += "<tr>"
           + "<td>" + esc(r.q) + "</td>"
           + "<td>" + esc(r.code) + "</td>"
@@ -139,7 +139,7 @@ document.getElementById("f").addEventListener("submit", function(e) {
   })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      var link = "holicselfie://?gourmet=" + encodeURIComponent(data.q);
+      var link = window.location.origin + "/go/" + encodeURIComponent(data.q);
       document.getElementById("deepLink").textContent = link;
       document.getElementById("linkBox").classList.add("show");
       e.target.reset();

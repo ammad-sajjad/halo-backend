@@ -101,6 +101,26 @@ app.get("/api/v1/transactions", function(req, res) {
   res.json(listStmt.all());
 });
 
+// Open-app redirect page: https://halo-backend-zj04.onrender.com/go/<q>
+app.get("/go/:q", function(req, res) {
+  var q = req.params.q;
+  res.send(
+    '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>Opening app...</title>' +
+    '<style>body{font-family:system-ui;background:#0d1117;color:#e6edf3;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;text-align:center}' +
+    '.box{padding:40px}h2{color:#58a6ff}a{color:#58a6ff;font-size:18px}</style></head><body>' +
+    '<div class="box"><h2>Opening Holic Selfie...</h2>' +
+    '<p>If the app does not open automatically:</p>' +
+    '<p><a href="holicselfie://?gourmet=' + encodeURIComponent(q) + '">Tap here to open the app</a></p>' +
+    '<p style="color:#8b949e;font-size:13px">Make sure the app is installed on your device.</p></div>' +
+    '<script>' +
+    'var intentUrl = "intent://?gourmet=' + encodeURIComponent(q) + '#Intent;scheme=holicselfie;package=com.example.holic_selfie_noproxy;end";' +
+    'window.location.href = intentUrl;' +
+    '</script></body></html>'
+  );
+});
+
 // Dashboard
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname, "dashboard.html"));
