@@ -101,6 +101,20 @@ app.get("/api/v1/transactions", function(req, res) {
   res.json(listStmt.all());
 });
 
+// Android App Links verification
+app.get("/.well-known/assetlinks.json", function(req, res) {
+  res.json([{
+    relation: ["delegate_permission/common.handle_all_urls"],
+    target: {
+      namespace: "android_app",
+      package_name: "com.example.holic_selfie_noproxy",
+      sha256_cert_fingerprints: [
+        "20:4E:7B:59:69:05:57:F5:1E:23:6B:35:BA:63:75:2E:9A:39:5E:D9:A5:B3:0D:44:8C:9E:F8:45:F0:10:4E:0D"
+      ]
+    }
+  }]);
+});
+
 // Open-app redirect page: https://halo-backend-zj04.onrender.com/go/<q>
 app.get("/go/:q", function(req, res) {
   var q = req.params.q;
